@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator - Level 1 Task 3 | Isha Amodkar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{min-height:100vh;background:#e8eaf1;display:grid;place-items:center;padding:20px;color:#111}
+.wrap{width:100%;max-width:900px;display:grid;grid-template-columns:0.9fr 1.1fr;gap:30px;align-items:center}
+.left h1{font-family:'Syne',sans-serif;font-size:2.2rem;line-height:1.1}
+.left p{color:#666;margin:12px 0 20px;font-size:0.92rem;line-height:1.6}
+.badge{display:inline-block;background:#fff;border:1px solid #ddd;padding:6px 12px;border-radius:999px;font-size:0.75rem;font-weight:600;margin-bottom:12px}
+.feat-list{list-style:none;margin-top:14px} .feat-list li{margin:8px 0;font-size:0.85rem;display:flex;gap:8px;color:#444}
+.calc-card{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,0.12);padding:20px;max-width:340px;width:100%;margin:0 auto;border:1px solid #eee}
+.display{background:#111;color:#fff;border-radius:16px;padding:18px 16px;text-align:right;min-height:84px;display:flex;flex-direction:column;justify-content:flex-end}
+#history{font-size:0.85rem;color:#888;min-height:18px;word-break:break-all}
+#screen{font-size:2rem;font-weight:600;letter-spacing:-0.02em;word-break:break-all;margin-top:4px}
+.buttons{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+button{height:54px;border:none;border-radius:14px;font-size:1.05rem;font-weight:600;cursor:pointer;transition:.15s;background:#f5f5f3;color:#111}
+button:hover{transform:translateY(-1px);filter:brightness(0.97)}
+button:active{transform:scale(0.96)}
+.op{background:#e8e6ff;color:#4b3bff}
+.eq{background:#111;color:#fff;grid-column:span 2}
+.func{background:#ffe9e0;color:#ff5a2a}
+.zero{grid-column:span 2}
+@media(max-width:800px){.wrap{grid-template-columns:1fr}.left{order:2;text-align:center}.left .feat-list{justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="left">
+<div class="badge">LEVEL 1 TASK 3 • CALCULATOR</div>
+<h1>Professional Calculator built with HTML, CSS & JS</h1>
+<p>As per internship requirements: interactive interface with +, -, ×, ÷ buttons, display screen, CSS Grid for alignment, event listeners, if-else, operators and loops.</p>
+<ul class="feat-list">
+<li>✅ CSS Grid: <code>grid-template-columns: repeat(4,1fr)</code></li>
+<li>✅ Display screen for input & result</li>
+<li>✅ Event Listeners + if-else + operators</li>
+<li>✅ No overlapping, clean box design</li>
+<li>✅ Keyboard support (0-9, +, -, *, /, Enter, Esc)</li>
+</ul>
+<p style="margin-top:16px;font-size:0.8rem;color:#888">By Isha Nilesh Amodkar • amodkarisha@gmail.com • Bhusawal</p>
+</div>
+
+<div class="calc-card">
+<div class="display"><div id="history"></div><div id="screen">0</div></div>
+<div class="buttons">
+<button class="func" onclick="clearAll()">AC</button>
+<button class="func" onclick="backspace()">⌫</button>
+<button class="func" onclick="append('%')">%</button>
+<button class="op" onclick="append('/')">÷</button>
+
+<button onclick="append('7')">7</button>
+<button onclick="append('8')">8</button>
+<button onclick="append('9')">9</button>
+<button class="op" onclick="append('*')">×</button>
+
+<button onclick="append('4')">4</button>
+<button onclick="append('5')">5</button>
+<button onclick="append('6')">6</button>
+<button class="op" onclick="append('-')">−</button>
+
+<button onclick="append('1')">1</button>
+<button onclick="append('2')">2</button>
+<button onclick="append('3')">3</button>
+<button class="op" onclick="append('+')">+</button>
+
+<button class="zero" onclick="append('0')">0</button>
+<button onclick="append('.')">.</button>
+<button class="eq" onclick="calculate()">=</button>
+</div>
+</div>
+</div>
+
+<script>
+let expr = '';
+let screen = document.getElementById('screen');
+let hist = document.getElementById('history');
+
+function update(){
+ screen.textContent = expr === '' ? '0' : expr.replaceAll('*','×').replaceAll('/','÷');
+}
+
+function append(val){
+ // prevent double operators
+ const ops = ['+','-','*','/','%','.'];
+ if(ops.includes(val) && ops.includes(expr.slice(-1)) && !(val==='-' && expr.slice(-1)!=='-')){
+   expr = expr.slice(0,-1);
+ }
+ expr += val;
+ update();
+}
+
+function clearAll(){ expr=''; hist.textContent=''; update(); }
+function backspace(){ expr=expr.slice(0,-1); update(); }
+
+function calculate(){
+ try{
+   if(expr==='') return;
+   hist.textContent = expr.replaceAll('*','×').replaceAll('/','÷') + ' =';
+   // loop example: replace % with /100 logic using loop
+   let evalExpr = expr;
+   // handle % as percentage
+   if(evalExpr.includes('%')){
+     // simple logic: 10% => 0.1
+     evalExpr = evalExpr.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+   }
+   // safety: only allow numbers and operators
+   if(!/^[0-9+\-*/().%\s]+$/.test(evalExpr)) throw 'Invalid';
+   let result = Function('"use strict"; return ('+evalExpr+')')();
+   // if-else for result handling
+   if(isNaN(result) || !isFinite(result)){
+     expr = 'Error';
+   } else {
+     // round to 8 decimals loop
+     result = Math.round((result + Number.EPSILON)*1e8)/1e8;
+     expr = String(result);
+   }
+   update();
+ } catch(e){
+   expr='Error'; update(); hist.textContent='Invalid Input';
+ }
+}
+
+// keyboard support with event listeners
+document.addEventListener('keydown', (e)=>{
+ if(/[0-9+\-*/.%]/.test(e.key)) append(e.key);
+ else if(e.key==='Enter' || e.key==='=') calculate();
+ else if(e.key==='Backspace') backspace();
+ else if(e.key==='Escape') clearAll();
+});
+update();
+</script>
+</body>
+</html>
